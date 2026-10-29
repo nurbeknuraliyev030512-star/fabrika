@@ -1,34 +1,182 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Ferma boshqaruvi — Tuxum fermasi</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600&family=Unbounded:wght@500;600&display=swap">
-<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Golden Egg Factory - Ulgurji Tuxum Savdosi</title>
+    <!-- Font Awesome Ikonkalari -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <!-- Asosiy Stil Fayli -->
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div id="login" hidden>
-  <div class="lg">
-    <div class="egg"><i></i></div>
-    <h1>Ferma boshqaruvi</h1>
-    <p>Faqat ferma boshqaruvchisi uchun. PIN kodni kiriting.</p>
-    <input id="pin" type="password" inputmode="numeric" autocomplete="off" aria-label="PIN kod" maxlength="12">
-    <button class="pri" id="go">Kirish</button>
-    <div class="err" id="err" role="alert"></div>
-    <p id="hint" style="font-size:12px;margin-top:8px"></p>
-  </div>
-</div>
-<div id="app" hidden>
-  <aside>
-    <div class="brand"><b><i></i></b>Tuxum fermasi</div>
-    <nav id="nav" aria-label="Bo‘limlar"></nav>
-    <div class="side-foot"><button data-a="chpin">PIN kodni o‘zgartirish</button><button data-a="out">Chiqish</button></div>
-  </aside>
-  <main id="main"></main>
-</div>
-<dialog id="dlg"></dialog>
-<div id="toast" hidden role="status"></div>
-<script src="script.js"></script>
+
+    <div class="background-decor">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+
+    <!-- NAVIGATION -->
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fa-solid fa-egg gold-egg"></i>
+            <span>Golden<strong>Egg</strong></span>
+        </div>
+        <div class="nav-actions">
+            <button class="btn-admin" onclick="openAdminModal()">
+                <i class="fa-solid fa-lock"></i> Admin Panel
+            </button>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTAINER -->
+    <main class="container">
+        <!-- CLIENT SECTION -->
+        <section class="hero-section">
+            <div class="badge">🔥 Ulgurji & Premium Sifat</div>
+            <h1>A'lo Sifatli Tuxumlarni <br><span class="gold-text">To'g'ridan-to'g'ri Fabrikadan</span> Buyurtma Qiling</h1>
+            <p class="subtitle">Eng hamyonbop narxlar va tezkor yetkazib berish xizmati.</p>
+
+            <div class="order-card-wrapper">
+                <div class="glass-card order-card">
+                    <h3><i class="fa-solid fa-cart-shopping"></i> Tezkor Buyurtma Berish</h3>
+                    <form id="clientOrderForm" onsubmit="handleClientOrder(event)">
+                        <div class="input-group">
+                            <label><i class="fa-solid fa-store"></i> Do'kon yoki Mijoz Nomi</label>
+                            <input type="text" id="clientName" placeholder="Masalan: Zormarket" required>
+                        </div>
+                        <div class="input-group">
+                            <label><i class="fa-solid fa-phone"></i> Telefon Raqam</label>
+                            <input type="tel" id="clientPhone" placeholder="+998 90 123 45 67" required>
+                        </div>
+                        <div class="input-group">
+                            <label><i class="fa-solid fa-box-open"></i> Miqdori (Karobka / 360 dona)</label>
+                            <input type="number" id="clientBoxes" min="1" value="10" required>
+                        </div>
+                        <button type="submit" class="btn-submit">
+                            <i class="fa-solid fa-paper-plane"></i> Buyurtma Yuborish
+                        </button>
+                    </form>
+                </div>
+
+                <!-- TRACKING CARD -->
+                <div class="glass-card tracking-card">
+                    <h3><i class="fa-solid fa-route"></i> Buyurtma Holati</h3>
+                    <div id="trackingStatusContainer" class="tracking-empty">
+                        <i class="fa-solid fa-clock-rotate-left empty-icon"></i>
+                        <p>Hozircha faol buyurtmangiz yo'q.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ADMIN AUTH MODAL -->
+    <div id="adminAuthModal" class="modal">
+        <div class="modal-content glass-card">
+            <span class="close-btn" onclick="closeAdminModal()">×</span>
+            <h2><i class="fa-solid fa-shield-halved"></i> Admin Kirish</h2>
+            <p>Admin panelga kirish uchun maxfiy PIN kodni kiriting:</p>
+            <input type="password" id="adminPinInput" maxlength="4" placeholder="••••" class="pin-input">
+            <button onclick="checkAdminPin()" class="btn-submit">Kirish</button>
+            <p id="pinError" class="error-msg"></p>
+        </div>
+    </div>
+
+    <!-- MAIN ADMIN PANEL (MODAL) -->
+    <div id="adminPanelModal" class="modal full-modal">
+        <div class="modal-content glass-card admin-dashboard">
+            <div class="admin-header">
+                <h2><i class="fa-solid fa-chart-line"></i> Fabrika Boshqaruv Paneli</h2>
+                <button class="btn-close-admin" onclick="closeAdminPanel()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <!-- DASHBOARD STATS -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fa-solid fa-boxes-stacked"></i></div>
+                    <div class="stat-info">
+                        <h4>Bugungi Sotuv</h4>
+                        <span id="statTodayBoxes">0</span> <small>karobka</small>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fa-solid fa-coins"></i></div>
+                    <div class="stat-info">
+                        <h4>Bugungi Tushum</h4>
+                        <span id="statTodayRevenue">0</span> <small>so'm</small>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon alert"><i class="fa-solid fa-book-bookmark"></i></div>
+                    <div class="stat-info">
+                        <h4>Umumiy Qarzlar</h4>
+                        <span id="statTotalDebt">0</span> <small>so'm</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TABS -->
+            <div class="admin-tabs">
+                <button class="tab-btn active" onclick="switchTab('ordersTab')"><i class="fa-solid fa-list-check"></i> Kelgan Buyurtmalar</button>
+                <button class="tab-btn" onclick="switchTab('debtTab')"><i class="fa-solid fa-book"></i> Qarz Daftari</button>
+            </div>
+
+            <!-- ORDERS TAB -->
+            <div id="ordersTab" class="tab-content active">
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#ID</th>
+                                <th>Mijoz</th>
+                                <th>Miqdor</th>
+                                <th>Vaqt</th>
+                                <th>Holat / Vaqt qo'shish</th>
+                                <th>Amal</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ordersTableBody">
+                            <!-- Javascript orqali to'ldiriladi -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- DEBT TAB -->
+            <div id="debtTab" class="tab-content">
+                <div class="debt-header">
+                    <h3><i class="fa-solid fa-plus-circle"></i> Yangi Qarz Qo'shish</h3>
+                    <form id="addDebtForm" onsubmit="handleAddDebt(event)" class="inline-form">
+                        <input type="text" id="debtClientName" placeholder="Do'kon nomi (masalan: Zormarket)" required>
+                        <input type="number" id="debtAmount" placeholder="Qarz summasi (so'm)" required>
+                        <button type="submit" class="btn-add"><i class="fa-solid fa-plus"></i> Saqlash</button>
+                    </form>
+                </div>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Do'kon / Mijoz</th>
+                                <th>Qarz Summasi</th>
+                                <th>Sana</th>
+                                <th>Amal</th>
+                            </tr>
+                        </thead>
+                        <tbody id="debtTableBody">
+                            <!-- Javascript orqali to'ldiriladi -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- JS fayli -->
+    <script src="app.js"></script>
 </body>
 </html>
