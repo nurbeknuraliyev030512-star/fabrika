@@ -1,291 +1,427 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tuxum Biznes — Fleyka Hisoblagich</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>O‘rmon Parranda | Boshqaruv paneli</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- Yuqori panel -->
-    <header class="top-header">
-        <div class="brand">
-            <i class="fa-solid fa-egg logo-icon"></i>
-            <div>
-                <h1 class="brand-title">TUXUM BIZNES</h1>
-                <p class="brand-sub">1 Fleyka = 30 dona tuxum</p>
-            </div>
+  <!-- Kirish oynasi -->
+  <section id="loginScreen" class="login-screen">
+    <form id="loginForm" class="login-card">
+      <div class="logo">OP</div>
+      <h1>O‘rmon Parranda</h1>
+      <p>Ferma boshqaruv tizimi</p>
+
+      <label for="username">Login</label>
+      <input id="username" type="text" placeholder="Loginni kiriting" required>
+
+      <label for="password">Parol</label>
+      <input id="password" type="password" placeholder="Parolni kiriting" required>
+
+      <button type="submit">Tizimga kirish</button>
+      <p id="loginError" class="error"></p>
+    </form>
+  </section>
+
+  <!-- Asosiy dastur -->
+  <div id="app" class="app hidden">
+
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo">OP</div>
+        <div>
+          <h2>O‘rmon Parranda</h2>
+          <small>Ferma boshqaruvi</small>
         </div>
-        <div class="today-badge" id="today-date">--.--.----</div>
-    </header>
+      </div>
 
-    <main class="main-container">
+      <p class="menu-title">ASOSIY MENYU</p>
 
-        <!-- TAB 1: ZAKAZ VA KALKULYATOR -->
-        <section id="tab-orders" class="tab-content active">
-            
-            <div class="card calc-card">
-                <div class="card-title-lg">
-                    <i class="fa-solid fa-calculator"></i> YANGI ZAKAZ
-                </div>
+      <button class="nav-link active" data-page="dashboard">🏠 Bosh sahifa</button>
+      <button class="nav-link" data-page="products">🥚 Mahsulotlar</button>
+      <button class="nav-link" data-page="shops">🏪 Do‘konlar</button>
+      <button class="nav-link" data-page="sales">🧾 Savdo</button>
+      <button class="nav-link" data-page="debts">💳 Qarzdorlik</button>
+      <button class="nav-link" data-page="expenses">💸 Xarajatlar</button>
+      <button class="nav-link" data-page="reports">📊 Hisobotlar</button>
 
-                <!-- Market Tanlash -->
-                <div class="form-group-lg">
-                    <label><i class="fa-solid fa-store"></i> MARKETNI TANLANG:</label>
-                    <select id="order-market" onchange="calculateOrder()">
-                        <option value="">-- Do'konni tanlang --</option>
-                    </select>
-                </div>
+      <div class="sidebar-bottom">
+        <span>👤 Ferma boshqaruvchisi</span>
+        <button id="logoutBtn" class="logout-btn">Chiqish</button>
+      </div>
+    </aside>
 
-                <!-- 3 Tur Tuxum - Fleykada Kiritish -->
-                <div class="fleyka-section-title">
-                    <i class="fa-solid fa-layer-group"></i> FLEYKA SONINI KIRITING (1 fleyka = 30 dona):
-                </div>
+    <main class="main-content">
+      <header class="topbar">
+        <div>
+          <h1 id="pageTitle">Bosh sahifa</h1>
+          <p>Ferma faoliyatini bir joydan boshqaring</p>
+        </div>
+        <div class="today" id="today"></div>
+      </header>
 
-                <div class="egg-grid-lg">
-                    
-                    <!-- Katta Tuxum -->
-                    <div class="egg-card katta-border">
-                        <div class="egg-type-header">
-                            <span class="type-name">KATTA</span>
-                            <span class="type-price" id="disp-price-katta">45,000 so'm/fl</span>
-                        </div>
-                        <div class="counter-box">
-                            <button class="cnt-btn minus" onclick="changeQty('qty-katta', -1)">-</button>
-                            <input type="number" id="qty-katta" value="0" min="0" oninput="calculateOrder()">
-                            <button class="cnt-btn plus" onclick="changeQty('qty-katta', 1)">+</button>
-                        </div>
-                        <div class="fleyka-calc-info" id="info-katta">0 dona (0 fleyka)</div>
-                    </div>
+      <!-- BOSH SAHIFA -->
+      <section id="dashboard" class="page">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span>Ombordagi tuxum</span>
+            <strong id="totalStock">0</strong>
+            <small>Fleka</small>
+          </div>
+          <div class="stat-card">
+            <span>Jami savdo</span>
+            <strong id="totalSales">0 so‘m</strong>
+            <small>Barcha savdolar</small>
+          </div>
+          <div class="stat-card">
+            <span>Do‘konlar qarzi</span>
+            <strong id="totalDebt">0 so‘m</strong>
+            <small>To‘lanmagan summa</small>
+          </div>
+          <div class="stat-card">
+            <span>Jami xarajat</span>
+            <strong id="totalExpenses">0 so‘m</strong>
+            <small>Qayd etilgan xarajatlar</small>
+          </div>
+        </div>
 
-                    <!-- O'rtacha Tuxum -->
-                    <div class="egg-card ortacha-border">
-                        <div class="egg-type-header">
-                            <span class="type-name">O'RTACHA</span>
-                            <span class="type-price" id="disp-price-ortacha">39,000 so'm/fl</span>
-                        </div>
-                        <div class="counter-box">
-                            <button class="cnt-btn minus" onclick="changeQty('qty-ortacha', -1)">-</button>
-                            <input type="number" id="qty-ortacha" value="0" min="0" oninput="calculateOrder()">
-                            <button class="cnt-btn plus" onclick="changeQty('qty-ortacha', 1)">+</button>
-                        </div>
-                        <div class="fleyka-calc-info" id="info-ortacha">0 dona (0 fleyka)</div>
-                    </div>
+        <div class="panel">
+          <div class="panel-heading">
+            <h2>Mahsulot qoldig‘i</h2>
+            <button class="secondary-btn" data-go="products">Mahsulotlarni ochish</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Mahsulot</th>
+                  <th>Fleka narxi</th>
+                  <th>Qoldiq (fleka)</th>
+                  <th>Umumiy qiymat</th>
+                </tr>
+              </thead>
+              <tbody id="dashboardProducts"></tbody>
+            </table>
+          </div>
+        </div>
 
-                    <!-- Kichik Tuxum -->
-                    <div class="egg-card kichik-border">
-                        <div class="egg-type-header">
-                            <span class="type-name">KICHIK</span>
-                            <span class="type-price" id="disp-price-kichik">33,000 so'm/fl</span>
-                        </div>
-                        <div class="counter-box">
-                            <button class="cnt-btn minus" onclick="changeQty('qty-kichik', -1)">-</button>
-                            <input type="number" id="qty-kichik" value="0" min="0" oninput="calculateOrder()">
-                            <button class="cnt-btn plus" onclick="changeQty('qty-kichik', 1)">+</button>
-                        </div>
-                        <div class="fleyka-calc-info" id="info-kichik">0 dona (0 fleyka)</div>
-                    </div>
+        <div class="panel">
+          <h2>Oxirgi savdolar</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Sana</th>
+                  <th>Do‘kon</th>
+                  <th>Mahsulot</th>
+                  <th>Miqdor</th>
+                  <th>Jami</th>
+                </tr>
+              </thead>
+              <tbody id="dashboardSales"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
 
-                </div>
+      <!-- MAHSULOTLAR -->
+      <section id="products" class="page hidden">
+        <div class="panel">
+          <h2>Mahsulot qo‘shish yoki qoldiqni yangilash</h2>
 
-                <!-- Natija va Hisob-kitob -->
-                <div class="total-summary-box">
-                    <div class="sum-row">
-                        <span>Hozirgi zakaz:</span>
-                        <strong id="res-current">0 so'm</strong>
-                    </div>
-                    <div class="sum-row debt-color">
-                        <span>Eski qarz:</span>
-                        <strong id="res-debt">0 so'm</strong>
-                    </div>
-                    <div class="sum-divider"></div>
-                    <div class="sum-row total-color">
-                        <span>JAMI TO'LOV:</span>
-                        <strong id="res-total">0 so'm</strong>
-                    </div>
-                </div>
+          <form id="productForm" class="form-grid">
+            <input id="productId" type="hidden">
 
-                <!-- Berilgan Pul -->
-                <div class="form-group-lg" style="margin-top: 15px;">
-                    <label><i class="fa-solid fa-money-bill-wave"></i> BERILGAN PUL (NAQD/KARTA):</label>
-                    <input type="number" id="paid-amount" placeholder="0 so'm" oninput="calculateOrder()">
-                </div>
-
-                <button class="big-submit-btn" onclick="saveOrder()">
-                    <i class="fa-solid fa-circle-check"></i> ZAKAZNI SAQLASH
-                </button>
+            <div>
+              <label>Mahsulot nomi</label>
+              <input id="productName" placeholder="Masalan: 1-tur tuxum" required>
             </div>
 
-            <!-- Bugungi zakazlar -->
-            <div class="card">
-                <div class="card-title-lg">
-                    <i class="fa-solid fa-receipt"></i> BUGUNGI ZAKAZLAR
-                </div>
-                <div id="today-orders-list"></div>
+            <div>
+              <label>Fleka narxi (so‘m)</label>
+              <input id="productPrice" type="number" min="0" value="0" required>
             </div>
 
-        </section>
-
-        <!-- TAB 2: MARKETLAR BAZASI -->
-        <section id="tab-markets" class="tab-content">
-            <div class="card">
-                <div class="market-top-bar">
-                    <div class="card-title-lg"><i class="fa-solid fa-shop"></i> MARKETLAR</div>
-                    <button class="add-market-btn" onclick="openAddMarketModal()">+ YANGI MARKET</button>
-                </div>
-                <div class="search-input-wrap">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" id="search-market" placeholder="Market nomini qidiring..." oninput="renderMarkets()">
-                </div>
+            <div>
+              <label>Ombordagi miqdor (fleka)</label>
+              <input id="productStock" type="number" min="0" value="0" required>
             </div>
 
-            <div id="markets-list" class="markets-container"></div>
-        </section>
+            <div class="form-action">
+              <button type="submit">Saqlash</button>
+              <button type="reset" class="secondary-btn">Tozalash</button>
+            </div>
+          </form>
+        </div>
 
-        <!-- TAB 3: OMBOR VA NARXLAR -->
-        <section id="tab-stock" class="tab-content">
-            <div class="card">
-                <div class="card-title-lg"><i class="fa-solid fa-tags"></i> FLEYKA NARXLARI (1 Fl = 30 dona)</div>
-                
-                <div class="price-edit-grid">
-                    <div class="form-group-lg">
-                        <label>KATTA (1 Fleyka narxi):</label>
-                        <input type="number" id="price-katta" value="45000" onchange="updatePrices()">
-                    </div>
-                    <div class="form-group-lg">
-                        <label>O'RTACHA (1 Fleyka narxi):</label>
-                        <input type="number" id="price-ortacha" value="39000" onchange="updatePrices()">
-                    </div>
-                    <div class="form-group-lg">
-                        <label>KICHIK (1 Fleyka narxi):</label>
-                        <input type="number" id="price-kichik" value="33000" onchange="updatePrices()">
-                    </div>
-                </div>
+        <div class="panel">
+          <h2>Barcha mahsulotlar</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Mahsulot</th>
+                  <th>Narxi</th>
+                  <th>Qoldiq</th>
+                  <th>Qiymati</th>
+                  <th>Amallar</th>
+                </tr>
+              </thead>
+              <tbody id="productsTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- DO‘KONLAR -->
+      <section id="shops" class="page hidden">
+        <div class="panel">
+          <h2>Do‘kon qo‘shish</h2>
+
+          <form id="shopForm" class="form-grid">
+            <input id="shopId" type="hidden">
+
+            <div>
+              <label>Do‘kon nomi</label>
+              <input id="shopName" placeholder="Do‘kon nomi" required>
             </div>
 
-            <div class="card">
-                <div class="card-title-lg"><i class="fa-solid fa-boxes-stacked"></i> OMBOR ASTATOGI</div>
-                <div class="stock-grid-lg">
-                    <div class="stock-box-lg">
-                        <span class="st-title">KATTA</span>
-                        <strong class="st-val" id="stock-katta-fl">83 fleyka</strong>
-                        <small class="st-sub" id="stock-katta-dona">2,500 dona</small>
-                    </div>
-                    <div class="stock-box-lg">
-                        <span class="st-title">O'RTACHA</span>
-                        <strong class="st-val" id="stock-ortacha-fl">60 fleyka</strong>
-                        <small class="st-sub" id="stock-ortacha-dona">1,800 dona</small>
-                    </div>
-                    <div class="stock-box-lg">
-                        <span class="st-title">KICHIK</span>
-                        <strong class="st-val" id="stock-kichik-fl">30 fleyka</strong>
-                        <small class="st-sub" id="stock-kichik-dona">900 dona</small>
-                    </div>
-                </div>
+            <div>
+              <label>Do‘kon egasi</label>
+              <input id="shopOwner" placeholder="Ism-familiya">
             </div>
-        </section>
 
-        <!-- TAB 4: HISOBOT -->
-        <section id="tab-stats" class="tab-content">
-            <div class="card">
-                <div class="card-title-lg"><i class="fa-solid fa-chart-line"></i> MOLIYAVIY HISOBOT</div>
-                <div class="stats-grid-lg">
-                    <div class="stat-card-lg debt-bg">
-                        <i class="fa-solid fa-hand-holding-dollar stat-icon"></i>
-                        <div>
-                            <span>JAMI NASIYA (QARZ):</span>
-                            <strong id="total-debt">0 so'm</strong>
-                        </div>
-                    </div>
-                    <div class="stat-card-lg sales-bg">
-                        <i class="fa-solid fa-cash-register stat-icon"></i>
-                        <div>
-                            <span>BUGUNGI TUSHUM:</span>
-                            <strong id="today-sales">0 so'm</strong>
-                        </div>
-                    </div>
-                </div>
+            <div>
+              <label>Telefon raqami</label>
+              <input id="shopPhone" type="tel" placeholder="+998...">
             </div>
-        </section>
+
+            <div>
+              <label>Manzil</label>
+              <input id="shopAddress" placeholder="Bozor yoki ko‘cha">
+            </div>
+
+            <div class="form-action">
+              <button type="submit">Do‘konni saqlash</button>
+              <button type="reset" class="secondary-btn">Tozalash</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="panel">
+          <h2>Do‘konlar ro‘yxati</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Do‘kon</th>
+                  <th>Egasi</th>
+                  <th>Telefon</th>
+                  <th>Manzil</th>
+                  <th>Qarzi</th>
+                  <th>Amallar</th>
+                </tr>
+              </thead>
+              <tbody id="shopsTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- SAVDO -->
+      <section id="sales" class="page hidden">
+        <div class="panel">
+          <h2>Yangi savdo kiritish</h2>
+
+          <form id="saleForm" class="form-grid">
+            <div>
+              <label>Sana</label>
+              <input id="saleDate" type="date" required>
+            </div>
+
+            <div>
+              <label>Do‘kon</label>
+              <select id="saleShop" required></select>
+            </div>
+
+            <div>
+              <label>Mahsulot</label>
+              <select id="saleProduct" required></select>
+            </div>
+
+            <div>
+              <label>Miqdor (fleka)</label>
+              <input id="saleQty" type="number" min="1" value="1" required>
+            </div>
+
+            <div>
+              <label>Bir fleka narxi (so‘m)</label>
+              <input id="salePrice" type="number" min="0" value="0" required>
+            </div>
+
+            <div>
+              <label>Olingan to‘lov (so‘m)</label>
+              <input id="salePaid" type="number" min="0" value="0" required>
+            </div>
+
+            <div class="full-width">
+              <label>Izoh</label>
+              <input id="saleNote" placeholder="Ixtiyoriy izoh">
+            </div>
+
+            <div class="full-width total-preview">
+              Savdo jami: <strong id="salePreview">0 so‘m</strong>
+            </div>
+
+            <div class="form-action">
+              <button type="submit">Savdoni saqlash</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="panel">
+          <h2>Savdolar tarixi</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Sana</th>
+                  <th>Do‘kon</th>
+                  <th>Mahsulot</th>
+                  <th>Fleka</th>
+                  <th>Jami</th>
+                  <th>To‘langan</th>
+                  <th>Qarz</th>
+                </tr>
+              </thead>
+              <tbody id="salesTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- QARZDORLIK -->
+      <section id="debts" class="page hidden">
+        <div class="panel">
+          <h2>Do‘kon qarzlari</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Do‘kon</th>
+                  <th>Telefon</th>
+                  <th>Qarz qoldig‘i</th>
+                  <th>To‘lov qabul qilish</th>
+                </tr>
+              </thead>
+              <tbody id="debtsTable"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>To‘lovlar tarixi</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Sana</th>
+                  <th>Do‘kon</th>
+                  <th>Summa</th>
+                  <th>Izoh</th>
+                </tr>
+              </thead>
+              <tbody id="paymentsTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- XARAJATLAR -->
+      <section id="expenses" class="page hidden">
+        <div class="panel">
+          <h2>Xarajat kiritish</h2>
+
+          <form id="expenseForm" class="form-grid">
+            <div>
+              <label>Sana</label>
+              <input id="expenseDate" type="date" required>
+            </div>
+
+            <div>
+              <label>Xarajat turi</label>
+              <input id="expenseName" placeholder="Masalan: yem, transport" required>
+            </div>
+
+            <div>
+              <label>Summa (so‘m)</label>
+              <input id="expenseAmount" type="number" min="1" required>
+            </div>
+
+            <div>
+              <label>Izoh</label>
+              <input id="expenseNote" placeholder="Ixtiyoriy">
+            </div>
+
+            <div class="form-action">
+              <button type="submit">Xarajatni saqlash</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="panel">
+          <h2>Xarajatlar tarixi</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Sana</th>
+                  <th>Xarajat turi</th>
+                  <th>Summa</th>
+                  <th>Izoh</th>
+                  <th>Amal</th>
+                </tr>
+              </thead>
+              <tbody id="expensesTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- HISOBOTLAR -->
+      <section id="reports" class="page hidden">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span>Sotilgan mahsulot qiymati</span>
+            <strong id="reportSales">0 so‘m</strong>
+          </div>
+          <div class="stat-card">
+            <span>Qabul qilingan to‘lovlar</span>
+            <strong id="reportCollected">0 so‘m</strong>
+          </div>
+          <div class="stat-card">
+            <span>Qarz qoldig‘i</span>
+            <strong id="reportDebt">0 so‘m</strong>
+          </div>
+          <div class="stat-card">
+            <span>Jami xarajat</span>
+            <strong id="reportExpenses">0 so‘m</strong>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>Hisobotni yuklab olish</h2>
+          <p>Savdolar ro‘yxatini CSV fayli ko‘rinishida yuklab olishingiz mumkin.</p>
+          <button id="exportBtn">📥 Savdo hisobotini yuklab olish</button>
+        </div>
+      </section>
 
     </main>
+  </div>
 
-    <!-- Barter Modal -->
-    <div id="barter-modal" class="modal-bg">
-        <div class="modal-box">
-            <div class="modal-head">
-                <h2><i class="fa-solid fa-right-left"></i> BARTER / TOVAR AYIRISH</h2>
-                <button class="close-btn" onclick="closeBarterModal()">✕</button>
-            </div>
-            <p id="barter-market-name" class="modal-subtext"></p>
-            <div class="form-group-lg">
-                <label>Olingan Mahsulot Nomi:</label>
-                <input type="text" id="barter-item" placeholder="Masalan: Un, Yog', Shakar">
-            </div>
-            <div class="form-group-lg">
-                <label>Tovar Summasi (so'm):</label>
-                <input type="number" id="barter-amount" placeholder="0 so'm">
-            </div>
-            <button class="big-submit-btn warning-btn" onclick="applyBarter()">
-                QARZDAN AYIRISH
-            </button>
-        </div>
-    </div>
-
-    <!-- Yangi Market Modal -->
-    <div id="add-market-modal" class="modal-bg">
-        <div class="modal-box">
-            <div class="modal-head">
-                <h2><i class="fa-solid fa-store"></i> YANGI MARKET QO'SHISH</h2>
-                <button class="close-btn" onclick="closeAddMarketModal()">✕</button>
-            </div>
-            <div class="form-group-lg">
-                <label>Market Nomi:</label>
-                <input type="text" id="new-name" placeholder="Masalan: Fayz Market">
-            </div>
-            <div class="form-group-lg">
-                <label>Do'kon Egasi Ismi:</label>
-                <input type="text" id="new-owner" placeholder="Masalan: Alisher aka">
-            </div>
-            <div class="form-group-lg">
-                <label>Telefon Raqam:</label>
-                <input type="text" id="new-phone" value="+998">
-            </div>
-            <div class="form-group-lg">
-                <label>Manzil / Lokatsiya:</label>
-                <input type="text" id="new-location" placeholder="Masalan: Qo'yliq bozori yonida">
-            </div>
-            <button class="big-submit-btn" onclick="saveNewMarket()">
-                BAZAGA SAQLASH
-            </button>
-        </div>
-    </div>
-
-    <!-- Pastki Navigatsiya -->
-    <nav class="bottom-bar">
-        <button class="nav-btn-lg active" onclick="switchTab('orders', this)">
-            <i class="fa-solid fa-calculator"></i>
-            <span>ZAKAZ</span>
-        </button>
-        <button class="nav-btn-lg" onclick="switchTab('markets', this)">
-            <i class="fa-solid fa-shop"></i>
-            <span>MARKETLAR</span>
-        </button>
-        <button class="nav-btn-lg" onclick="switchTab('stock', this)">
-            <i class="fa-solid fa-boxes-stacked"></i>
-            <span>OMBOR</span>
-        </button>
-        <button class="nav-btn-lg" onclick="switchTab('stats', this)">
-            <i class="fa-solid fa-chart-pie"></i>
-            <span>HISOBOT</span>
-        </button>
-    </nav>
-
-    <script src="script.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
